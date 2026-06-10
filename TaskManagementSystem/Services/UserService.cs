@@ -1,22 +1,31 @@
 namespace TaskManagementSystem.Services;
+
+using Microsoft.EntityFrameworkCore;
+using TaskManagementSystem.Data;
+using TaskManagementSystem.DTOs;
 using TaskManagementSystem.Models;
 
-public class UserService : IUserService
+public class UserService(AppDbContext context) : IUserService
 {
-    static List<User> users =
-    [
-        new User { Id = 1, FirstName = "Alice", LastName = "Doe", Email = "AliceDoe@gmail.com" },
-        new User { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "BobSmith@gmail.com" },
-        new User { Id = 3, FirstName = "Charlie", LastName = "Brown", Email = "CharlieBrown@gmail.com" }
-    ];
+    public async Task<List<UserGetDto>> GetAllUsersAsync()
+        => await context.Users.Select(u => new UserGetDto
+        {
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email
+        }).ToListAsync();
 
-    public async Task<List<User>> GetAllUsersAsync()
-        => await Task.FromResult(users);
-
-    public async Task<User?> GetUserByIdAsync(int id)
+    public async Task<UserGetDto?> GetUserByIdAsync(int id)
     {
-        var result = users.FirstOrDefault(u => u.Id == id);
-        return await Task.FromResult(result);
+        var result = await context.Users
+            .Where(u => u.Id == id)
+            .Select(u => new UserGetDto
+            {
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email
+            }).FirstOrDefaultAsync();
+        return result;
     }
     public Task<User> CreateUserAsync(User user)
     {

@@ -2,8 +2,8 @@
 
 
 using Microsoft.AspNetCore.Mvc;
-using TaskManagementSystem.Models;
 using TaskManagementSystem.Services;
+using TaskManagementSystem.DTOs;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -11,11 +11,11 @@ using TaskManagementSystem.Services;
 public class UsersController(IUserService service) : ControllerBase
 {
 	[HttpGet]
-	public async Task<ActionResult<List<User>>> GetUsers()
+	public async Task<ActionResult<List<UserGetDto>>> GetUsers()
 		=> Ok(await service.GetAllUsersAsync());
 
 	[HttpGet("{id}")]
-	public async Task<ActionResult<User>> GetUser(int id)
+	public async Task<ActionResult<UserGetDto>> GetUser(int id)
     {
         var user = await service.GetUserByIdAsync(id);
         if (user == null)
