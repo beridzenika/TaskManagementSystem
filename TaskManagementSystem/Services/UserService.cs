@@ -95,6 +95,8 @@ public class UserService(
             Email = editedUser.Email
         };
     }
+
+    // DELETE: api/users/{id}
     public async Task<bool> DeleteUserAsync(int id)
     {
         var user = await context.Users.FindAsync(id);

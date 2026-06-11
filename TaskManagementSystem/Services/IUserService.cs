@@ -1,7 +1,6 @@
 namespace TaskManagementSystem.Services;
 
 using TaskManagementSystem.DTOs;
-using TaskManagementSystem.Models;
 
 public interface IUserService
 {

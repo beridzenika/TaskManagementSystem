@@ -1,6 +1,5 @@
 ﻿namespace TaskManagementSystem.Controllers;
 
-
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.Services;
 using TaskManagementSystem.DTOs;
@@ -9,9 +8,7 @@ using FluentValidation;
 [Route("api/[controller]")]
 [ApiController]
 
-public class UsersController(
-    IUserService service,
-    IValidator<UserRequestDto> validator) : ControllerBase
+public class UsersController(IUserService service) : ControllerBase
 {
     [HttpGet]
 	public async Task<ActionResult<List<UserResponseDto>>> GetUsers()
@@ -22,7 +19,7 @@ public class UsersController(
     {
         var user = await service.GetUserByIdAsync(id);
         if (user == null)
-            return NotFound("Given user id not found.");
+            return NotFound("Given id not found.");
         return Ok(user);
     }
 
@@ -53,9 +50,8 @@ public class UsersController(
 
             if (updatedUser == null)
             {
-                return NotFound("Given user id not found.");
+                return NotFound("Given id not found.");
             }
-
             return Ok(updatedUser);
         }
         catch (ValidationException ex)
@@ -72,7 +68,7 @@ public class UsersController(
             var result = await service.DeleteUserAsync(id);
             if (!result)
             {
-                return NotFound("Given user id not found.");
+                return NotFound("Given id not found.");
             }
             return NoContent();
         }

@@ -15,9 +15,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+// register tables
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IValidator<UserRequestDto>, UserCreateValidator>();
+
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IValidator<ProjectRequestDto>, ProjectCreateValidator>();
+
+builder.Services.AddScoped<ITaskItemService, TaskItemService>();
+builder.Services.AddScoped<IValidator<TaskItemRequestDto>, TaskItemCreateValidator>();
 
 //sqlate connection
 builder.Services.AddDbContext<AppDbContext>(options =>

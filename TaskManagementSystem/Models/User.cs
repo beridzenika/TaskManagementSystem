@@ -7,4 +7,5 @@ public class User
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
 
+    public List<TaskItem> Tasks { get; set; } = new();
 }
