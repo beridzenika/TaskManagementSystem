@@ -5,10 +5,10 @@ using TaskManagementSystem.Models;
 
 public interface IUserService
 {
-    Task<List<UserGetDto>> GetAllUsersAsync();
-    Task<UserGetDto?> GetUserByIdAsync(int id);
+    Task<List<UserResponseDto>> GetAllUsersAsync();
+    Task<UserResponseDto?> GetUserByIdAsync(int id);
 
-    Task<User> CreateUserAsync(User user);
+    Task<UserResponseDto> CreateUserAsync(UserRequestDto user);
     
     Task<User> UpdateUserAsync(int id, User user);
     

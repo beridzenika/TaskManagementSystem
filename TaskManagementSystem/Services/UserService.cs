@@ -7,31 +7,54 @@ using TaskManagementSystem.Models;
 
 public class UserService(AppDbContext context) : IUserService
 {
-    public async Task<List<UserGetDto>> GetAllUsersAsync()
-        => await context.Users.Select(u => new UserGetDto
+    // GET: api/users
+    public async Task<List<UserResponseDto>> GetAllUsersAsync()
+        => await context.Users.Select(u => new UserResponseDto
         {
+            Id = u.Id,
             FirstName = u.FirstName,
             LastName = u.LastName,
             Email = u.Email
         }).ToListAsync();
 
-    public async Task<UserGetDto?> GetUserByIdAsync(int id)
+    // GET: api/users/{id}
+    public async Task<UserResponseDto?> GetUserByIdAsync(int id)
     {
         var result = await context.Users
             .Where(u => u.Id == id)
-            .Select(u => new UserGetDto
+            .Select(u => new UserResponseDto
             {
+                Id = u.Id,
                 FirstName = u.FirstName,
                 LastName = u.LastName,
                 Email = u.Email
             }).FirstOrDefaultAsync();
         return result;
     }
-    public Task<User> CreateUserAsync(User user)
+
+    // POST: api/users
+    public async Task<UserResponseDto> CreateUserAsync(UserRequestDto user)
     {
-        // Implementation to create a new user
-        throw new NotImplementedException();
+        var newUser = new User
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email
+        };
+
+        context.Users.Add(newUser);
+        await context.SaveChangesAsync();
+
+        return new UserResponseDto
+        {
+            Id = newUser.Id,
+            FirstName = newUser.FirstName,
+            LastName = newUser.LastName,
+            Email = newUser.Email
+        };
+
     }
+
     public Task<User> UpdateUserAsync(int id, User user)
     {
         // Implementation to update an existing user
