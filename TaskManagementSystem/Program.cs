@@ -25,6 +25,9 @@ builder.Services.AddScoped<IValidator<ProjectRequestDto>, ProjectCreateValidator
 builder.Services.AddScoped<ITaskItemService, TaskItemService>();
 builder.Services.AddScoped<IValidator<TaskItemRequestDto>, TaskItemCreateValidator>();
 
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IValidator<CommentRequestDto>, CommentCreateValidator>();
+
 //sqlate connection
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
