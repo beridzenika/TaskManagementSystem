@@ -1,11 +1,14 @@
 namespace TaskManagementSystem.Services;
 
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using TaskManagementSystem.Data;
 using TaskManagementSystem.DTOs;
 using TaskManagementSystem.Models;
 
-public class UserService(AppDbContext context) : IUserService
+public class UserService(
+    AppDbContext context,
+    IValidator<UserRequestDto> validator) : IUserService
 {
     // GET: api/users
     public async Task<List<UserResponseDto>> GetAllUsersAsync()
@@ -35,6 +38,13 @@ public class UserService(AppDbContext context) : IUserService
     // POST: api/users
     public async Task<UserResponseDto> CreateUserAsync(UserRequestDto user)
     {
+        var validationResult = await validator.ValidateAsync(user);
+
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
         var newUser = new User
         {
             FirstName = user.FirstName,
@@ -52,17 +62,49 @@ public class UserService(AppDbContext context) : IUserService
             LastName = newUser.LastName,
             Email = newUser.Email
         };
-
     }
 
-    public Task<User> UpdateUserAsync(int id, User user)
+    // PUT: api/users/{id}
+    public async Task<UserResponseDto?> UpdateUserAsync(int id, UserRequestDto user)
     {
-        // Implementation to update an existing user
-        throw new NotImplementedException();
+        var validationResult = await validator.ValidateAsync(user);
+
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
+        var editedUser = await context.Users.FindAsync(id);
+
+        if (editedUser == null)
+        {
+            return null;
+        }
+
+        editedUser.FirstName = user.FirstName;
+        editedUser.LastName = user.LastName;
+        editedUser.Email = user.Email;
+
+        await context.SaveChangesAsync();
+
+        return new UserResponseDto
+        {
+            Id = editedUser.Id,
+            FirstName = editedUser.FirstName,
+            LastName = editedUser.LastName,
+            Email = editedUser.Email
+        };
     }
-    public Task<bool> DeleteUserAsync(int id)
+    public async Task<bool> DeleteUserAsync(int id)
     {
-        // Implementation to delete a user by ID
-        throw new NotImplementedException();
+        var user = await context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return false;
+        }
+        context.Users.Remove(user);
+        await context.SaveChangesAsync();
+
+        return true;
     }
 }

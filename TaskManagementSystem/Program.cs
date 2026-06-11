@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IValidator<UserRequestDto>, UserCreateValidator>();
 
+//sqlate connection
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 

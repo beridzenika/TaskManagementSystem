@@ -29,20 +29,57 @@ public class UsersController(
     [HttpPost]
     public async Task<ActionResult> CreateUser(UserRequestDto user)
     {
-        var validationResult = await validator.ValidateAsync(user);
-
-        if (!validationResult.IsValid)
+        try
         {
-            return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            var createdUser = await service.CreateUserAsync(user);
+
+            return CreatedAtAction(
+                nameof(GetUser),
+                new { id = createdUser.Id },
+                createdUser);
         }
-
-        var createdUser = await service.CreateUserAsync(user);
-
-        return CreatedAtAction(
-            nameof(GetUser),
-            new { id = createdUser.Id },
-            createdUser);
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Errors.Select(e => e.ErrorMessage));
+        }
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateUser(int id, UserRequestDto user)
+    {
+        try
+        {
+            var updatedUser = await service.UpdateUserAsync(id, user);
+
+            if (updatedUser == null)
+            {
+                return NotFound("Given user id not found.");
+            }
+
+            return Ok(updatedUser);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(ex.Errors.Select(e => e.ErrorMessage));
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteUser(int id)
+    {
+        try
+        {
+            var result = await service.DeleteUserAsync(id);
+            if (!result)
+            {
+                return NotFound("Given user id not found.");
+            }
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 
 }
